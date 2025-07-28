@@ -22,21 +22,28 @@ if uploaded_file:
         df = pd.read_excel(uploaded_file, sheet_name=0)
         df.columns = df.columns.str.strip()
 
-        # Determine required columns
-        all_columns = df.columns.tolist()
-        required_fields = [col for col in all_columns if col not in optional_fields]
+        required_fields = [col for col in df.columns if col not in optional_fields]
 
-        # Check missing values
-        st.subheader("Validation Results")
+        st.subheader("Hasil Pengecekan File")
 
         has_issues = False
 
         for idx, row in df.iterrows():
-            missing = [field for field in required_fields if pd.isna(row.get(field)) or str(row.get(field)).strip() == ""]
+            missing = [
+                field for field in required_fields
+                if pd.isna(row.get(field)) or str(row.get(field)).strip() == ""
+            ]
+
             if missing:
                 has_issues = True
-                st.warning(f"Row {idx + 2}: Missing fields: {', '.join(missing)}")  # +2 for header and 0-index
+                judul = str(row.get("Judul", "")).strip()
+                st.warning(
+                    f"🔎 Baris {idx + 2} — **Judul/Nama Data**: *{judul or 'Tidak ada judul'}*\n"
+                    f"❌ Kosong pada kolom: {', '.join(missing)}"
+                )
+
         if not has_issues:
-            st.success("All required fields are filled ✅")
+            st.success("Semua kolom wajib terisi dengan benar ✅")
+
     except Exception as e:
-        st.error(f"Error reading the file: {e}")
+        st.error(f"❗ Error membaca file: {e}")
