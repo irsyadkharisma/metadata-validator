@@ -5,6 +5,7 @@ import pandas as pd
 optional_fields = {
     "Kategori (Other)",
     "ID",
+    "Skala atau resolusi spasial (Optional)",
     "Penafian (disclaimer) penggunaan data (Opsional)",
     "Lisensi Data / Ketentuan Penggunaan",
     "Lampirkan file lisensi",
