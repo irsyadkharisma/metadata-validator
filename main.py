@@ -13,8 +13,10 @@ optional_fields = {
     "Aplikasi"
 }
 
-st.title("Irsyad Metadata Validator")
+st.title("WRI Metadata Validator")
 st.write("Upload your Excel file to validate mandatory metadata fields.")
+st.write("Unggah berkas Excel Anda untuk memvalidasi bidang metadata wajib.")
+st.write("contact: irsyad.kharisma@wri.org")
 
 uploaded_file = st.file_uploader("Upload Excel File", type=["xlsx"])
 
