@@ -5,7 +5,7 @@ import pandas as pd
 optional_fields = {
     "Kategori (Other)",
     "ID",
-    "Skala atau resolusi spasial (Optional)",
+    "Skala atau resolusi spasial (Optional)",
     "Skala atau resolusi spasial (Optional)",
     "Penafian (disclaimer) penggunaan data (Opsional)",
     "Lisensi Data / Ketentuan Penggunaan",
@@ -28,7 +28,7 @@ if uploaded_file:
 
         required_fields = [col for col in df.columns if col not in optional_fields]
 
-        st.subheader("Hasil Pengecekan File")
+        st.subheader("Results/Hasil Pengecekan File")
 
         has_issues = False
 
@@ -47,7 +47,8 @@ if uploaded_file:
                 )
 
         if not has_issues:
+            st.success("All mandatory fields are filled correctly ✅")
             st.success("Semua kolom wajib terisi dengan benar ✅")
 
     except Exception as e:
-        st.error(f"❗ Error membaca file: {e}")
+        st.error(f"❗ Error read file: {e}")
