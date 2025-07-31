@@ -58,7 +58,7 @@ if uploaded_file:
         st.error(f"❗ Error read file: {e}")
 
 #LINK
-def fetch_excel_from_onedrive_or_sharepoint(shared_link):
+def fetch_excel_from_public_onedrive(shared_link):
     # Add download=1 if it's SharePoint-style link
     if "sharepoint.com" in shared_link and "download=1" not in shared_link:
         if "?" in shared_link:
