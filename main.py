@@ -85,13 +85,14 @@ def fetch_excel_from_onedrive_or_sharepoint(shared_link):
 
 link = st.text_input("Or Paste Excel Online Link (Permission must by Public/Anoyone, Be careful for sensitif data - sharepoint/onedrive) Link:")
 
-if st.button("🧹 Clear Data"):
-    st.markdown(
-        """<script>
-            window.location.reload();
-        </script>""",
-        unsafe_allow_html=True,
-    )
+st.markdown(
+    """
+    <form action="/" method="get">
+        <button type="submit" style="margin-top: 10px;">🧹 Clear Data</button>
+    </form>
+    """,
+    unsafe_allow_html=True,
+)
 
 if link and st.session_state.data_source is None:
     try:
