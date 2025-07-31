@@ -88,7 +88,10 @@ link = st.text_input("Or Paste Excel Online Link (Permission must by Public/Anoy
 if st.button("🧹 Clear Data"):
     st.session_state.data_source = None
     st.session_state.df = None
-    st.experimental_rerun()
+    try:
+        st.experimental_rerun()
+    except Exception:
+        pass
 
 if link and st.session_state.data_source is None:
     try:
