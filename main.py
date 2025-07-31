@@ -86,12 +86,13 @@ if st.session_state.data_source is None:
     with col2:
         link = st.text_input("Or Paste Excel Online Link (Permission must by Public/Anoyone, Be careful for sensitif data - sharepoint/onedrive) Link:):", key="link_input")
         if link:
-            try:
-                df = fetch_excel_from_onedrive_or_sharepoint(link)
-                st.session_state.df = df
-                st.session_state.data_source = "link"
-            except Exception as e:
-                st.error(f"Failed to load file: {e}")
+            with st.spinner("🔄 Loading data from link..."):
+                try:
+                    df = fetch_excel_from_onedrive_or_sharepoint(link)
+                    st.session_state.df = df
+                    st.session_state.data_source = "link"
+                except Exception as e:
+                    st.error(f"Failed to load file: {e}")
 
 # Clear Data button (using Streamlit native button)
 if st.session_state.df is not None:
