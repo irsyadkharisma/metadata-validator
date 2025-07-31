@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from io import BytesIO
 
 # Fields that are optional (allowed to be empty)
 optional_fields = {
@@ -57,25 +58,28 @@ if uploaded_file:
 
 #LINK
 
-
-def fetch_excel_from_public_onedrive(shared_link):
-    try:
-        response = requests.get(shared_link, allow_redirects=True)
-        if response.status_code == 200:
-            return pd.read_excel(BytesIO(response.content))
+def load_excel_from_link(link):
+    # Try to handle OneDrive direct links
+    if "1drv.ms" in link or "onedrive.live.com" in link:
+        # Get redirected link
+        response = requests.get(link)
+        download_url = response.url  # Follows redirects
+        file_response = requests.get(download_url)
+        if file_response.ok:
+            return pd.read_excel(BytesIO(file_response.content))
         else:
-            raise Exception("File could not be downloaded.")
-    except Exception as e:
-        raise e
+            raise Exception("Unable to download Excel file.")
+    else:
+        raise Exception("Unsupported link format.")
 
-st.title("Metadata Validator")
 
-link = st.text_input("Or You can paste Excel online (OneDrive) Link:")
+link = st.text_input("Paste Excel Online (OneDrive) Link:")
 
 if link:
     try:
-        df = fetch_excel_from_public_onedrive(link)
+        df = load_excel_from_link(link)
         st.success("File loaded successfully!")
         st.dataframe(df.head())
+        # Call your metadata validator here with df
     except Exception as e:
         st.error(f"Failed to load file: {e}")
