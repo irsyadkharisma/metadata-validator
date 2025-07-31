@@ -84,7 +84,7 @@ if st.session_state.data_source is None:
                 st.error(f"❗ Error reading file: {e}")
 
     with col2:
-        link = st.text_input("Or Paste Excel Online Link (public SharePoint/OneDrive only):", key="link_input")
+        link = st.text_input("Or Paste Excel Online Link (Permission must by Public/Anoyone, Be careful for sensitif data - sharepoint/onedrive) Link:):", key="link_input")
         if link:
             try:
                 df = fetch_excel_from_onedrive_or_sharepoint(link)
@@ -94,12 +94,11 @@ if st.session_state.data_source is None:
                 st.error(f"Failed to load file: {e}")
 
 # Clear Data button (using Streamlit native button)
-if st.session_state.data_source is not None:
-    if st.button("🔄 Check Another File"):
-        st.session_state.df = None
-        st.session_state.data_source = None
-        st.experimental_rerun()
-        
+if st.session_state.df is not None:
+    if st.button("🧹 Clear Data (press 2x)"):
+        st.session_state.clear()
+        st.stop()
+
 if st.session_state.df is not None:
     st.success("File loaded successfully!")
     st.dataframe(st.session_state.df.head())
