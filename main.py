@@ -88,9 +88,8 @@ link = st.text_input("Or Paste Excel Online Link (Permission must by Public/Anoy
 # Clear Data button (using Streamlit native button)
 if st.session_state.df is not None:
     if st.button("🧹 Clear Data"):
-        st.session_state.df = None
-        st.session_state.data_source = None
-        st.experimental_rerun()
+        st.session_state.clear()
+        st.stop()
 
 if link and st.session_state.data_source is None:
     try:
