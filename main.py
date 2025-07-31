@@ -94,11 +94,12 @@ if st.session_state.data_source is None:
                 st.error(f"Failed to load file: {e}")
 
 # Clear Data button (using Streamlit native button)
-if st.session_state.df is not None:
-    if st.button("🧹 Clear Data"):
-        st.session_state.clear()
-        st.stop()
-
+if st.session_state.data_source is not None:
+    if st.button("🔄 Check Another File"):
+        st.session_state.df = None
+        st.session_state.data_source = None
+        st.experimental_rerun()
+        
 if st.session_state.df is not None:
     st.success("File loaded successfully!")
     st.dataframe(st.session_state.df.head())
