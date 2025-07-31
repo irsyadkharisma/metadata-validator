@@ -78,7 +78,8 @@ def fetch_excel_from_onedrive_or_sharepoint(shared_link):
     except Exception as e:
         raise Exception(f"Unable to read Excel from link: {e}")
 
-link = st.text_input("Paste Excel Online (OneDrive/SharePoint) Link:")
+link = st.text_input("Or Paste Excel Online Link (sharepoint/onedrive) Link:")
+st.write("Permission must by Public/Anoyone, Be careful for sensitif data")
 
 if link:
     try:
