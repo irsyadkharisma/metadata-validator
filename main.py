@@ -19,6 +19,8 @@ st.write("Upload your Excel file to validate mandatory metadata fields.")
 st.write("Unggah berkas Excel Anda untuk memvalidasi bidang metadata wajib.")
 st.write("contact: irsyad.kharisma@wri.org")
 
+
+#FILE
 uploaded_file = st.file_uploader("Upload Excel File", type=["xlsx"])
 
 if uploaded_file:
@@ -52,3 +54,31 @@ if uploaded_file:
 
     except Exception as e:
         st.error(f"❗ Error read file: {e}")
+
+#LINK
+
+def load_excel_from_link(link):
+    # Try to handle OneDrive direct links
+    if "1drv.ms" in link or "onedrive.live.com" in link:
+        # Get redirected link
+        response = requests.get(link)
+        download_url = response.url  # Follows redirects
+        file_response = requests.get(download_url)
+        if file_response.ok:
+            return pd.read_excel(BytesIO(file_response.content))
+        else:
+            raise Exception("Unable to download Excel file.")
+    else:
+        raise Exception("Unsupported link format.")
+
+
+link = st.text_input("Paste Excel Online (OneDrive) Link:")
+
+if link:
+    try:
+        df = load_excel_from_link(link)
+        st.success("File loaded successfully!")
+        st.dataframe(df.head())
+        # Call your metadata validator here with df
+    except Exception as e:
+        st.error(f"Failed to load file: {e}")
