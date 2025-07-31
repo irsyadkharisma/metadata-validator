@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import requests
 from io import BytesIO
 
 # Fields that are optional (allowed to be empty)
