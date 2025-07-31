@@ -54,31 +54,6 @@ def validate_metadata(df):
         st.success("Semua kolom wajib terisi dengan benar ✅")
 
 # ------------------------
-# File Upload Handler
-# ------------------------
-if st.session_state.data_source is None:
-    uploaded_file = st.file_uploader("Upload Excel File", type=["xlsx"])
-    link = st.text_input("Or Paste Excel Online Link (Permission must be Public/Anyone - SharePoint/OneDrive):")
-    if uploaded_file:
-        try:
-            df = pd.read_excel(uploaded_file, sheet_name=0)
-            st.session_state.df = df
-            st.session_state.data_source = "file"
-        except Exception as e:
-            st.error(f"❗ Error reading file: {e}")
-    elif link:
-        try:
-            df = fetch_excel_from_onedrive_or_sharepoint(link)
-            st.session_state.df = df
-            st.session_state.data_source = "link"
-        except Exception as e:
-            st.error(f"Failed to load file: {e}")
-elif st.session_state.data_source == "file":
-    st.info("📁 File uploaded. If you want to check another file, click the button below.")
-elif st.session_state.data_source == "link":
-    st.info("🔗 Link loaded. If you want to check another file, click the button below.")
-
-# ------------------------
 # SharePoint/OneDrive Link Handler
 # ------------------------
 def fetch_excel_from_onedrive_or_sharepoint(shared_link):
@@ -87,6 +62,7 @@ def fetch_excel_from_onedrive_or_sharepoint(shared_link):
             shared_link += "&download=1"
         else:
             shared_link += "?download=1"
+    
     try:
         response = requests.get(shared_link, allow_redirects=True)
         response.raise_for_status()
@@ -94,9 +70,32 @@ def fetch_excel_from_onedrive_or_sharepoint(shared_link):
     except Exception as e:
         raise Exception(f"Unable to read Excel from link: {e}")
 
-# "Check Another File" button logic
-if st.session_state.data_source is not None:
-    if st.button("🔄 Check Another File"):
+if st.session_state.data_source is None:
+    col1, col2 = st.columns(2)
+
+    with col1:
+        uploaded_file = st.file_uploader("Upload Excel File", type=["xlsx"])
+        if uploaded_file:
+            try:
+                df = pd.read_excel(uploaded_file, sheet_name=0)
+                st.session_state.df = df
+                st.session_state.data_source = "file"
+            except Exception as e:
+                st.error(f"❗ Error reading file: {e}")
+
+    with col2:
+        link = st.text_input("Or Paste Excel Online Link (public SharePoint/OneDrive only):", key="link_input")
+        if link:
+            try:
+                df = fetch_excel_from_onedrive_or_sharepoint(link)
+                st.session_state.df = df
+                st.session_state.data_source = "link"
+            except Exception as e:
+                st.error(f"Failed to load file: {e}")
+
+# Clear Data button (using Streamlit native button)
+if st.session_state.df is not None:
+    if st.button("🧹 Clear Data"):
         st.session_state.clear()
         st.stop()
 
