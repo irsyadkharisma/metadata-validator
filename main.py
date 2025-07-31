@@ -3,6 +3,10 @@ import pandas as pd
 import requests
 from io import BytesIO
 
+if "data_source" not in st.session_state:
+    st.session_state.data_source = None
+    st.session_state.df = None
+
 # Fields that are optional (allowed to be empty)
 optional_fields = {
     "Kategori (Other)",
@@ -54,10 +58,11 @@ def validate_metadata(df):
 # ------------------------
 uploaded_file = st.file_uploader("Upload Excel File", type=["xlsx"])
 
-if uploaded_file:
+if uploaded_file and st.session_state.data_source is None:
     try:
         df = pd.read_excel(uploaded_file, sheet_name=0)
-        validate_metadata(df)
+        st.session_state.df = df
+        st.session_state.data_source = "file"
     except Exception as e:
         st.error(f"❗ Error reading file: {e}")
 
@@ -81,14 +86,20 @@ def fetch_excel_from_onedrive_or_sharepoint(shared_link):
 link = st.text_input("Or Paste Excel Online Link (sharepoint/onedrive) Link:")
 st.write("Permission must by Public/Anoyone, Be careful for sensitif data")
 
-if link:
+if st.button("🧹 Clear Data"):
+    st.session_state.data_source = None
+    st.session_state.df = None
+    st.experimental_rerun()
+
+if link and st.session_state.data_source is None:
     try:
         df = fetch_excel_from_onedrive_or_sharepoint(link)
-        st.success("File loaded successfully!")
-        st.dataframe(df.head())
-
-        # Run the same validation here
-        validate_metadata(df)
-
+        st.session_state.df = df
+        st.session_state.data_source = "link"
     except Exception as e:
         st.error(f"Failed to load file: {e}")
+
+if st.session_state.df is not None:
+    st.success("File loaded successfully!")
+    st.dataframe(st.session_state.df.head())
+    validate_metadata(st.session_state.df)
