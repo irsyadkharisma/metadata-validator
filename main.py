@@ -68,12 +68,14 @@ def fetch_excel_from_onedrive_or_sharepoint(shared_link):
     
     try:
         response = requests.get(shared_link, allow_redirects=True)
-        content_type = response.headers.get('Content-Type', '')
+        response.raise_for_status()  # raises error for 4xx/5xx
 
-        if response.status_code == 200 and ('excel' in content_type or 'octet-stream' in content_type):
+        try:
+            # Try to parse Excel with openpyxl
             return pd.read_excel(BytesIO(response.content), engine='openpyxl')
-        else:
-            raise Exception(f"Unexpected content type: {content_type}. File might not be shared publicly.")
+        except Exception as parse_error:
+            raise Exception("Downloaded file could not be parsed as Excel. Are you sure it's an .xlsx file?") from parse_error
+
     except Exception as e:
         raise e
 
@@ -88,6 +90,5 @@ if link:
         df = fetch_excel_from_onedrive_or_sharepoint(link)
         st.success("File loaded successfully!")
         st.dataframe(df.head())
-        # ➕ Plug df into your metadata validator here
     except Exception as e:
         st.error(f"Failed to load file: {e}")
