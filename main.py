@@ -58,7 +58,7 @@ if uploaded_file:
         st.error(f"❗ Error read file: {e}")
 
 #LINK
-def fetch_excel_from_public_onedrive(shared_link):
+def fetch_excel_from_onedrive_or_sharepoint(shared_link):
     # Add download=1 if it's SharePoint-style link
     if "sharepoint.com" in shared_link and "download=1" not in shared_link:
         if "?" in shared_link:
@@ -73,18 +73,21 @@ def fetch_excel_from_public_onedrive(shared_link):
         if response.status_code == 200 and ('excel' in content_type or 'octet-stream' in content_type):
             return pd.read_excel(BytesIO(response.content), engine='openpyxl')
         else:
-            raise Exception("Downloaded content is not an Excel file. Check if the file is shared publicly.")
+            raise Exception(f"Unexpected content type: {content_type}. File might not be shared publicly.")
     except Exception as e:
         raise e
 
+import streamlit as st
+
 st.title("Metadata Validator")
 
-link = st.text_input("Paste Excel Online (OneDrive) Link:")
+link = st.text_input("Paste Excel Online (OneDrive/SharePoint) Link:")
 
 if link:
     try:
-        df = fetch_excel_from_public_onedrive(link)
+        df = fetch_excel_from_onedrive_or_sharepoint(link)
         st.success("File loaded successfully!")
         st.dataframe(df.head())
+        # ➕ Plug df into your metadata validator here
     except Exception as e:
         st.error(f"Failed to load file: {e}")
