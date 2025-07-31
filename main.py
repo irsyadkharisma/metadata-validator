@@ -85,14 +85,12 @@ def fetch_excel_from_onedrive_or_sharepoint(shared_link):
 
 link = st.text_input("Or Paste Excel Online Link (Permission must by Public/Anoyone, Be careful for sensitif data - sharepoint/onedrive) Link:")
 
-st.markdown(
-    """
-    <form action="/" method="get">
-        <button type="submit" style="margin-top: 10px;">🧹 Clear Data</button>
-    </form>
-    """,
-    unsafe_allow_html=True,
-)
+# Clear Data button (using Streamlit native button)
+if st.session_state.df is not None:
+    if st.button("🧹 Clear Data"):
+        st.session_state.df = None
+        st.session_state.data_source = None
+        st.experimental_rerun()
 
 if link and st.session_state.data_source is None:
     try:
